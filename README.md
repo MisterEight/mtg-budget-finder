@@ -19,5 +19,7 @@ Fonte de scrapping para preços em R$: LigaMagic.
 # Próximos passos / roadmap
 
 1 - MVP: Busca e filtragem de cartas similares por palavras-chaves com preços em USD.
+
 2 - Integrar valores da LigaMagic.
+
 3 - Adicionar o texto da carta como fator para similaridade.
