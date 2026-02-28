@@ -1,10 +1,6 @@
-import os
 import requests
 import pymongo
-
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "mtg_budget_finder")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME", "cards")
+from core.config import MONGO_URI, DB_NAME, COLLECTION_NAME
 
 BULK_DATA_URL = "https://api.scryfall.com/bulk-data"
 
