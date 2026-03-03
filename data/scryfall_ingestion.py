@@ -30,8 +30,9 @@ def save_to_mongo(cards):
     collection.drop()  # TODO: adicionar confirmação antes de dropar em produção
     print(f"Inserindo {len(cards)} cartas no MongoDB...")
     collection.insert_many(cards)
-
-    # TODO: criar índices em name, keywords e type_line para buscas eficientes
+    collection.create_index("name")
+    collection.create_index("keywords")
+    collection.create_index("type_line")
     print("Ingestão concluída.")
     client.close()
 
