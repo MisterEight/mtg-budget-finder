@@ -1,5 +1,6 @@
 import requests
 import pymongo
+import ijson
 from core.config import MONGO_URI, DB_NAME, COLLECTION_NAME
 
 BULK_DATA_URL = "https://api.scryfall.com/bulk-data"
@@ -16,11 +17,11 @@ def get_bulk_data_url():
     raise ValueError("Bulk data oracle_cards não encontrado")
 
 def download_cards(download_uri):
-    # TODO: usar streaming para evitar carregar ~200MB inteiros na memória
     print("Baixando cartas...")
-    response = requests.get(download_uri)
+    response = requests.get(download_uri, stream=True)
     response.raise_for_status()
-    return response.json()
+    response.raw.decode_content = True
+    return list(ijson.items(response.raw, "item", use_float=True))
 
 def save_to_mongo(cards):
     client = pymongo.MongoClient(MONGO_URI)
