@@ -1,21 +1,17 @@
 import os
 import joblib
-import pymongo
 from sklearn.feature_extraction.text import TfidfVectorizer
-from core.config import MONGO_URI, DB_NAME, COLLECTION_NAME
+from db.connection import connect
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
 
 def build():
-    client = pymongo.MongoClient(MONGO_URI)
-    collection = client[DB_NAME][COLLECTION_NAME]
-
-    cursor = collection.find(
-        {"oracle_text": {"$exists": True, "$ne": ""}},
-        {"oracle_id": 1, "oracle_text": 1}
-    )
-    cards = list(cursor)
-    client.close()
+    with connect() as collection:
+        cursor = collection.find(
+            {"oracle_text": {"$exists": True, "$ne": ""}},
+            {"oracle_id": 1, "oracle_text": 1}
+        )
+        cards = list(cursor)
 
     oracle_ids = [c["oracle_id"] for c in cards]
     texts = [c["oracle_text"] for c in cards]

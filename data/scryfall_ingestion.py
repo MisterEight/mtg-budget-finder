@@ -1,7 +1,6 @@
 import requests
-import pymongo
 import ijson
-from core.config import MONGO_URI, DB_NAME, COLLECTION_NAME
+from db.connection import connect
 
 BULK_DATA_URL = "https://api.scryfall.com/bulk-data"
 
@@ -24,18 +23,14 @@ def download_cards(download_uri):
     return list(ijson.items(response.raw, "item", use_float=True))
 
 def save_to_mongo(cards):
-    client = pymongo.MongoClient(MONGO_URI)
-    db = client[DB_NAME]
-    collection = db[COLLECTION_NAME]
-
-    collection.drop()  # TODO: adicionar confirmação antes de dropar em produção
-    print(f"Inserindo {len(cards)} cartas no MongoDB...")
-    collection.insert_many(cards)
-    collection.create_index("name")
-    collection.create_index("keywords")
-    collection.create_index("type_line")
-    print("Ingestão concluída.")
-    client.close()
+    with connect() as collection:
+        collection.drop()  # TODO: adicionar confirmação antes de dropar em produção
+        print(f"Inserindo {len(cards)} cartas no MongoDB...")
+        collection.insert_many(cards)
+        collection.create_index("name")
+        collection.create_index("keywords")
+        collection.create_index("type_line")
+        print("Ingestão concluída.")
 
 if __name__ == "__main__":
     download_uri = get_bulk_data_url()
